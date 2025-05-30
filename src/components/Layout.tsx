@@ -10,7 +10,6 @@ import {
   FileText, 
   Settings, 
   User,
-  Shield,
   TrendingUp
 } from "lucide-react";
 
@@ -43,10 +42,14 @@ export function Layout({ children }: LayoutProps) {
         <Sidebar className="border-r">
           <SidebarContent>
             <div className="p-6 border-b">
-              <div className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-primary" />
+              <div className="flex items-center space-x-3">
+                <img 
+                  src="/lovable-uploads/3668c9b3-ae11-4ca6-984e-b40a08a9536e.png" 
+                  alt="STONZ Logo" 
+                  className="h-8 w-auto"
+                />
                 <div>
-                  <h2 className="text-lg font-bold">MAP Monitor</h2>
+                  <h2 className="text-lg font-bold">STONZ Price Monitor</h2>
                   <p className="text-xs text-muted-foreground">Price Compliance</p>
                 </div>
               </div>
