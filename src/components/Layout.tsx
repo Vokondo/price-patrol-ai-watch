@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
@@ -44,7 +45,7 @@ export function Layout({ children }: LayoutProps) {
               <div className="flex items-center space-x-2">
                 <Shield className="h-8 w-8 text-primary" />
                 <div>
-                  <h2 className="text-lg font-bold">STONZ Price Monitor</h2>
+                  <h2 className="text-lg font-bold">STONZ</h2>
                   <p className="text-xs text-muted-foreground">Price Compliance</p>
                 </div>
               </div>
