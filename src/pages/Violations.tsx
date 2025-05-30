@@ -57,7 +57,7 @@ const Violations = () => {
                 <SelectValue placeholder="All Retailers" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Retailers</SelectItem>
+                <SelectItem value="all">All Retailers</SelectItem>
                 <SelectItem value="amazon">Amazon</SelectItem>
                 <SelectItem value="bestbuy">Best Buy</SelectItem>
                 <SelectItem value="walmart">Walmart</SelectItem>
@@ -69,7 +69,7 @@ const Violations = () => {
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="contacted">Contacted</SelectItem>
                 <SelectItem value="resolved">Resolved</SelectItem>
