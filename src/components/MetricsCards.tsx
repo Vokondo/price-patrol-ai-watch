@@ -54,8 +54,8 @@ export function MetricsCards() {
             <p className="text-xs text-muted-foreground">
               <span className={
                 metric.changeType === "increase" ? "text-green-600" :
-                metric.changeType === "decrease" ? "text-red-600" :
-                "text-muted-foreground"
+                metric.changeType === "neutral" ? "text-muted-foreground" :
+                "text-red-600"
               }>
                 {metric.change}
               </span>
