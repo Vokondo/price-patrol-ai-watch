@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
@@ -10,7 +9,7 @@ import {
   FileText, 
   Settings, 
   User,
-  TrendingUp
+  Shield
 } from "lucide-react";
 
 const navigationItems = [
@@ -42,12 +41,8 @@ export function Layout({ children }: LayoutProps) {
         <Sidebar className="border-r">
           <SidebarContent>
             <div className="p-6 border-b">
-              <div className="flex items-center space-x-3">
-                <img 
-                  src="/lovable-uploads/3668c9b3-ae11-4ca6-984e-b40a08a9536e.png" 
-                  alt="STONZ Logo" 
-                  className="h-8 w-auto"
-                />
+              <div className="flex items-center space-x-2">
+                <Shield className="h-8 w-8 text-primary" />
                 <div>
                   <h2 className="text-lg font-bold">STONZ Price Monitor</h2>
                   <p className="text-xs text-muted-foreground">Price Compliance</p>
