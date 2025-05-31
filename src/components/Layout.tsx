@@ -38,38 +38,52 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <Sidebar className="border-r">
+      <div className="min-h-screen flex w-full bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+        <Sidebar className="border-r border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl">
           <SidebarContent>
-            <div className="p-6 border-b">
-              <div className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-primary" />
+            <div className="p-6 border-b border-gray-200 dark:border-gray-800 bg-gradient-to-r from-gray-900 via-black to-gray-900 dark:from-gray-100 dark:via-white dark:to-gray-100">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-white/10 dark:bg-black/10 backdrop-blur-sm border border-white/20 dark:border-black/20">
+                  <Shield className="h-6 w-6 text-white dark:text-black" />
+                </div>
                 <div>
-                  <h2 className="text-lg font-bold">STONZ</h2>
-                  <p className="text-xs text-muted-foreground">Price Compliance</p>
+                  <h2 className="text-xl font-bold bg-gradient-to-r from-white via-gray-100 to-white dark:from-black dark:via-gray-900 dark:to-black bg-clip-text text-transparent">
+                    STONZ
+                  </h2>
+                  <p className="text-xs text-white/70 dark:text-black/70 font-medium">
+                    Price Compliance
+                  </p>
                 </div>
               </div>
             </div>
             
-            <SidebarGroup>
-              <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroup className="p-4">
+              <SidebarGroupLabel className="text-gray-600 dark:text-gray-400 font-semibold text-xs uppercase tracking-wider mb-2">
+                Navigation
+              </SidebarGroupLabel>
               <SidebarGroupContent>
-                <SidebarMenu>
+                <SidebarMenu className="space-y-1">
                   {navigationItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={isActive(item.url)}>
                         <NavLink 
                           to={item.url} 
                           className={({ isActive }) => 
-                            `flex items-center space-x-2 w-full px-3 py-2 rounded-md transition-colors ${
+                            `group flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all duration-300 ${
                               isActive 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'hover:bg-muted'
+                                ? 'bg-gradient-to-r from-gray-900 via-black to-gray-900 dark:from-gray-100 dark:via-white dark:to-gray-100 text-white dark:text-black shadow-lg transform scale-105' 
+                                : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:scale-105 hover:shadow-md'
                             }`
                           }
                         >
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
+                          <div className={`p-2 rounded-lg transition-all duration-300 ${
+                            isActive(item.url)
+                              ? 'bg-white/20 dark:bg-black/20'
+                              : 'bg-gray-200 dark:bg-gray-700 group-hover:bg-gray-300 dark:group-hover:bg-gray-600'
+                          }`}>
+                            <item.icon className="h-4 w-4" />
+                          </div>
+                          <span className="font-medium">{item.title}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -81,12 +95,12 @@ export function Layout({ children }: LayoutProps) {
         </Sidebar>
 
         <div className="flex-1 flex flex-col">
-          <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-6">
-            <SidebarTrigger />
+          <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60 flex items-center px-6 shadow-sm">
+            <SidebarTrigger className="hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors p-2 rounded-lg" />
             <div className="ml-auto flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-muted-foreground">System Online</span>
+              <div className="flex items-center space-x-3 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-950/20 dark:to-green-950/20 border border-emerald-200 dark:border-emerald-800">
+                <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-green-500 rounded-full animate-pulse shadow-lg"></div>
+                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">System Online</span>
               </div>
             </div>
           </header>
