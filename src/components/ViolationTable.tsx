@@ -12,7 +12,11 @@ import { Badge } from "@/components/ui/badge";
 import { useViolations } from '@/hooks/useViolations';
 import { format } from 'date-fns';
 
-export function ViolationTable() {
+interface ViolationTableProps {
+  showRecent?: boolean;
+}
+
+export function ViolationTable({ showRecent = false }: ViolationTableProps) {
   const { data: violations, isLoading, error } = useViolations();
 
   if (isLoading) {
@@ -38,6 +42,9 @@ export function ViolationTable() {
       </div>
     );
   }
+
+  // Limit to recent violations if showRecent is true
+  const displayViolations = showRecent ? violations.slice(0, 5) : violations;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -68,7 +75,7 @@ export function ViolationTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {violations.map((violation) => (
+          {displayViolations.map((violation) => (
             <TableRow key={violation.id}>
               <TableCell>
                 <div>
