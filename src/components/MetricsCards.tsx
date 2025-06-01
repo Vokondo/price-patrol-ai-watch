@@ -1,41 +1,44 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, DollarSign, TrendingUp, Clock } from "lucide-react";
+import { AlertTriangle, Package, Store, TrendingUp } from "lucide-react";
+import { useViolationStats } from '@/hooks/useViolations';
+import { useProductStats } from '@/hooks/useProducts';
+import { useRetailers } from '@/hooks/useRetailers';
 
 export function MetricsCards() {
+  const { data: violationStats, isLoading: violationsLoading } = useViolationStats();
+  const { data: productStats, isLoading: productsLoading } = useProductStats();
+  const { data: retailers, isLoading: retailersLoading } = useRetailers();
+
   const metrics = [
     {
       title: "Active Violations",
-      value: "23",
-      change: "+12%",
-      changeType: "increase" as const,
+      value: violationsLoading ? "..." : violationStats?.active || 0,
       icon: AlertTriangle,
-      description: "MAP violations detected today"
+      description: "Requires immediate attention",
+      color: "text-red-600"
     },
     {
-      title: "Monitored Products",
-      value: "1,247",
-      change: "+5.2%",
-      changeType: "increase" as const,
-      icon: DollarSign,
-      description: "Across all retailers"
+      title: "Products Monitored",
+      value: productsLoading ? "..." : productStats?.monitored || 0,
+      icon: Package,
+      description: `${productStats?.total || 0} total products`,
+      color: "text-blue-600"
     },
     {
-      title: "Compliance Rate",
-      value: "94.2%",
-      change: "+2.1%",
-      changeType: "increase" as const,
+      title: "Retail Partners",
+      value: retailersLoading ? "..." : retailers?.length || 0,
+      icon: Store,
+      description: "Active monitoring",
+      color: "text-green-600"
+    },
+    {
+      title: "Resolved Today",
+      value: violationsLoading ? "..." : violationStats?.resolvedToday || 0,
       icon: TrendingUp,
-      description: "7-day average"
-    },
-    {
-      title: "Last Scrape",
-      value: "12m ago",
-      change: "On schedule",
-      changeType: "neutral" as const,
-      icon: Clock,
-      description: "Next in 3h 48m"
+      description: "Compliance actions taken",
+      color: "text-purple-600"
     }
   ];
 
@@ -47,19 +50,12 @@ export function MetricsCards() {
             <CardTitle className="text-sm font-medium">
               {metric.title}
             </CardTitle>
-            <metric.icon className="h-4 w-4 text-muted-foreground" />
+            <metric.icon className={`h-4 w-4 ${metric.color}`} />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metric.value}</div>
             <p className="text-xs text-muted-foreground">
-              <span className={
-                metric.changeType === "increase" ? "text-green-600" :
-                metric.changeType === "neutral" ? "text-muted-foreground" :
-                "text-red-600"
-              }>
-                {metric.change}
-              </span>
-              {" "}{metric.description}
+              {metric.description}
             </p>
           </CardContent>
         </Card>

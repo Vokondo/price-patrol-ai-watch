@@ -9,7 +9,243 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      price_history: {
+        Row: {
+          currency: string | null
+          id: string
+          price: number
+          product_id: string | null
+          raw_data: Json | null
+          retailer_id: string | null
+          scraped_at: string | null
+        }
+        Insert: {
+          currency?: string | null
+          id?: string
+          price: number
+          product_id?: string | null
+          raw_data?: Json | null
+          retailer_id?: string | null
+          scraped_at?: string | null
+        }
+        Update: {
+          currency?: string | null
+          id?: string
+          price?: number
+          product_id?: string | null
+          raw_data?: Json | null
+          retailer_id?: string | null
+          scraped_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_history_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_monitoring: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          monitoring_frequency:
+            | Database["public"]["Enums"]["monitoring_frequency"]
+            | null
+          product_id: string | null
+          retailer_id: string | null
+          retailer_product_url: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          monitoring_frequency?:
+            | Database["public"]["Enums"]["monitoring_frequency"]
+            | null
+          product_id?: string | null
+          retailer_id?: string | null
+          retailer_product_url: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          monitoring_frequency?:
+            | Database["public"]["Enums"]["monitoring_frequency"]
+            | null
+          product_id?: string | null
+          retailer_id?: string | null
+          retailer_product_url?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_monitoring_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_monitoring_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          brand: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          minimum_advertised_price: number | null
+          msrp: number
+          name: string
+          sku: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          minimum_advertised_price?: number | null
+          msrp: number
+          name: string
+          sku?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          minimum_advertised_price?: number | null
+          msrp?: number
+          name?: string
+          sku?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      retailers: {
+        Row: {
+          contact_email: string | null
+          created_at: string | null
+          id: string
+          name: string
+          status: string | null
+          updated_at: string | null
+          website_url: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          status?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          status?: string | null
+          updated_at?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      violations: {
+        Row: {
+          advertised_price: number
+          created_at: string | null
+          detected_at: string | null
+          difference_amount: number
+          difference_percentage: number
+          id: string
+          minimum_price: number
+          notes: string | null
+          product_id: string | null
+          resolved_at: string | null
+          retailer_id: string | null
+          status: Database["public"]["Enums"]["violation_status"] | null
+          updated_at: string | null
+          violation_type: string
+        }
+        Insert: {
+          advertised_price: number
+          created_at?: string | null
+          detected_at?: string | null
+          difference_amount: number
+          difference_percentage: number
+          id?: string
+          minimum_price: number
+          notes?: string | null
+          product_id?: string | null
+          resolved_at?: string | null
+          retailer_id?: string | null
+          status?: Database["public"]["Enums"]["violation_status"] | null
+          updated_at?: string | null
+          violation_type: string
+        }
+        Update: {
+          advertised_price?: number
+          created_at?: string | null
+          detected_at?: string | null
+          difference_amount?: number
+          difference_percentage?: number
+          id?: string
+          minimum_price?: number
+          notes?: string | null
+          product_id?: string | null
+          resolved_at?: string | null
+          retailer_id?: string | null
+          status?: Database["public"]["Enums"]["violation_status"] | null
+          updated_at?: string | null
+          violation_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "violations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "violations_retailer_id_fkey"
+            columns: ["retailer_id"]
+            isOneToOne: false
+            referencedRelation: "retailers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +254,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      monitoring_frequency: "hourly" | "daily" | "weekly"
+      violation_status: "active" | "resolved" | "investigating"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +370,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      monitoring_frequency: ["hourly", "daily", "weekly"],
+      violation_status: ["active", "resolved", "investigating"],
+    },
   },
 } as const

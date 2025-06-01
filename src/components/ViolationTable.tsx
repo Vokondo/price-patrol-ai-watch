@@ -1,63 +1,56 @@
 
 import React from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ExternalLink, AlertTriangle } from "lucide-react";
+import { useViolations } from '@/hooks/useViolations';
+import { format } from 'date-fns';
 
-interface ViolationTableProps {
-  showRecent?: boolean;
-}
+export function ViolationTable() {
+  const { data: violations, isLoading, error } = useViolations();
 
-export function ViolationTable({ showRecent = false }: ViolationTableProps) {
-  const violations = [
-    {
-      id: 1,
-      product: "Samsung Galaxy S24 Ultra",
-      retailer: "Amazon",
-      msrp: 1199.99,
-      price: 999.99,
-      difference: 200.00,
-      timestamp: "2024-01-15 14:30:00",
-      url: "https://amazon.com/product/123",
-      status: "active"
-    },
-    {
-      id: 2,
-      product: "Apple iPhone 15 Pro",
-      retailer: "Best Buy",
-      msrp: 999.99,
-      price: 899.99,
-      difference: 100.00,
-      timestamp: "2024-01-15 13:45:00",
-      url: "https://bestbuy.com/product/456",
-      status: "active"
-    },
-    {
-      id: 3,
-      product: "MacBook Pro 14\"",
-      retailer: "Walmart",
-      msrp: 1999.99,
-      price: 1799.99,
-      difference: 200.00,
-      timestamp: "2024-01-15 12:15:00",
-      url: "https://walmart.com/product/789",
-      status: "contacted"
-    },
-    {
-      id: 4,
-      product: "Sony WH-1000XM5",
-      retailer: "Target",
-      msrp: 399.99,
-      price: 329.99,
-      difference: 70.00,
-      timestamp: "2024-01-15 11:20:00",
-      url: "https://target.com/product/321",
-      status: "resolved"
+  if (isLoading) {
+    return (
+      <div className="rounded-md border p-8 text-center">
+        <p className="text-muted-foreground">Loading violations...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-md border p-8 text-center">
+        <p className="text-red-600">Error loading violations: {error.message}</p>
+      </div>
+    );
+  }
+
+  if (!violations || violations.length === 0) {
+    return (
+      <div className="rounded-md border p-8 text-center">
+        <p className="text-muted-foreground">No violations found.</p>
+      </div>
+    );
+  }
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return <Badge variant="destructive">Active</Badge>;
+      case 'resolved':
+        return <Badge variant="default">Resolved</Badge>;
+      case 'investigating':
+        return <Badge variant="secondary">Investigating</Badge>;
+      default:
+        return <Badge variant="outline">{status}</Badge>;
     }
-  ];
-
-  const displayedViolations = showRecent ? violations.slice(0, 3) : violations;
+  };
 
   return (
     <div className="rounded-md border">
@@ -66,46 +59,39 @@ export function ViolationTable({ showRecent = false }: ViolationTableProps) {
           <TableRow>
             <TableHead>Product</TableHead>
             <TableHead>Retailer</TableHead>
-            <TableHead>MSRP</TableHead>
+            <TableHead>Violation Type</TableHead>
             <TableHead>Advertised Price</TableHead>
+            <TableHead>Min Price</TableHead>
             <TableHead>Difference</TableHead>
-            <TableHead>Timestamp</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead>Detected</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {displayedViolations.map((violation) => (
+          {violations.map((violation) => (
             <TableRow key={violation.id}>
-              <TableCell className="font-medium">
-                <div className="flex items-center space-x-2">
-                  <AlertTriangle className="h-4 w-4 text-red-500" />
-                  <span>{violation.product}</span>
+              <TableCell>
+                <div>
+                  <div className="font-medium">{violation.products?.name}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {violation.products?.sku} • {violation.products?.brand}
+                  </div>
                 </div>
               </TableCell>
-              <TableCell>{violation.retailer}</TableCell>
-              <TableCell>${violation.msrp.toFixed(2)}</TableCell>
-              <TableCell className="text-red-600 font-medium">
-                ${violation.price.toFixed(2)}
+              <TableCell>{violation.retailers?.name}</TableCell>
+              <TableCell className="capitalize">
+                {violation.violation_type.replace('_', ' ')}
               </TableCell>
-              <TableCell className="text-red-600">
-                -${violation.difference.toFixed(2)}
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {new Date(violation.timestamp).toLocaleString()}
-              </TableCell>
+              <TableCell>${violation.advertised_price}</TableCell>
+              <TableCell>${violation.minimum_price}</TableCell>
               <TableCell>
-                <Badge variant={
-                  violation.status === "active" ? "destructive" :
-                  violation.status === "contacted" ? "secondary" : "default"
-                }>
-                  {violation.status}
-                </Badge>
+                <div className="text-red-600">
+                  -${violation.difference_amount} ({violation.difference_percentage}%)
+                </div>
               </TableCell>
+              <TableCell>{getStatusBadge(violation.status)}</TableCell>
               <TableCell>
-                <Button variant="ghost" size="sm">
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
+                {format(new Date(violation.detected_at), 'MMM dd, yyyy HH:mm')}
               </TableCell>
             </TableRow>
           ))}
