@@ -10,7 +10,8 @@ import {
   FileText, 
   Settings, 
   User,
-  Shield
+  Shield,
+  Activity
 } from "lucide-react";
 
 const navigationItems = [
@@ -39,37 +40,39 @@ export function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <Sidebar className="border-r">
+        <Sidebar className="border-r border-sidebar-border bg-sidebar">
           <SidebarContent>
-            <div className="p-6 border-b">
-              <div className="flex items-center space-x-2">
-                <Shield className="h-8 w-8 text-primary" />
+            <div className="p-6 border-b border-sidebar-border">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-sidebar-primary rounded-xl flex items-center justify-center">
+                  <Shield className="h-6 w-6 text-sidebar-primary-foreground" />
+                </div>
                 <div>
-                  <h2 className="text-lg font-bold">STONZ</h2>
-                  <p className="text-xs text-muted-foreground">Price Compliance</p>
+                  <h2 className="text-xl font-bold text-sidebar-foreground">STONZ</h2>
+                  <p className="text-sm text-sidebar-foreground/70">Price Compliance</p>
                 </div>
               </div>
             </div>
             
-            <SidebarGroup>
-              <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+            <SidebarGroup className="px-4 py-6">
+              <SidebarGroupLabel className="text-sidebar-foreground/50 font-medium mb-4">Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
-                <SidebarMenu>
+                <SidebarMenu className="space-y-2">
                   {navigationItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild isActive={isActive(item.url)}>
                         <NavLink 
                           to={item.url} 
                           className={({ isActive }) => 
-                            `flex items-center space-x-2 w-full px-3 py-2 rounded-md transition-colors ${
+                            `flex items-center space-x-3 w-full px-4 py-3 rounded-xl transition-all duration-200 group ${
                               isActive 
-                                ? 'bg-primary text-primary-foreground' 
-                                : 'hover:bg-muted'
+                                ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-lg' 
+                                : 'hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground'
                             }`
                           }
                         >
-                          <item.icon className="h-4 w-4" />
-                          <span>{item.title}</span>
+                          <item.icon className="h-5 w-5 icon-line" />
+                          <span className="font-medium">{item.title}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -81,18 +84,22 @@ export function Layout({ children }: LayoutProps) {
         </Sidebar>
 
         <div className="flex-1 flex flex-col">
-          <header className="h-16 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-6">
-            <SidebarTrigger />
-            <div className="ml-auto flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-muted-foreground">System Online</span>
+          <header className="h-18 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-8 shadow-sm">
+            <SidebarTrigger className="hover:bg-accent rounded-lg p-2" />
+            <div className="ml-auto flex items-center space-x-6">
+              <div className="flex items-center space-x-3 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Activity className="w-4 h-4 text-success animate-pulse" />
+                  <span className="text-muted-foreground font-medium">System Online</span>
+                </div>
               </div>
             </div>
           </header>
 
-          <main className="flex-1 p-6">
-            {children}
+          <main className="flex-1 p-8 bg-background">
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
           </main>
         </div>
       </div>

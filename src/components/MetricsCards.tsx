@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, Package, Store, TrendingUp } from "lucide-react";
+import { AlertTriangle, Package, Store, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { useViolationStats } from '@/hooks/useViolations';
 import { useProductStats } from '@/hooks/useProducts';
 import { useRetailers } from '@/hooks/useRetailers';
@@ -17,46 +17,92 @@ export function MetricsCards() {
       value: violationsLoading ? "..." : violationStats?.active || 0,
       icon: AlertTriangle,
       description: "Requires immediate attention",
-      color: "text-red-600"
+      trend: "+12%",
+      trendDirection: "up",
+      color: "text-destructive",
+      bgColor: "bg-destructive/10",
+      borderColor: "border-destructive/20"
     },
     {
       title: "Products Monitored",
       value: productsLoading ? "..." : productStats?.monitored || 0,
       icon: Package,
-      description: `${productStats?.total || 0} total products`,
-      color: "text-blue-600"
+      description: `${productStats?.total || 0} total in catalog`,
+      trend: "+5%",
+      trendDirection: "up",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+      borderColor: "border-primary/20"
     },
     {
       title: "Retail Partners",
       value: retailersLoading ? "..." : retailers?.length || 0,
       icon: Store,
-      description: "Active monitoring",
-      color: "text-green-600"
+      description: "Active monitoring channels",
+      trend: "0%",
+      trendDirection: "stable",
+      color: "text-success",
+      bgColor: "bg-success/10",
+      borderColor: "border-success/20"
     },
     {
       title: "Resolved Today",
       value: violationsLoading ? "..." : violationStats?.resolvedToday || 0,
       icon: TrendingUp,
       description: "Compliance actions taken",
-      color: "text-purple-600"
+      trend: "-8%",
+      trendDirection: "down",
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+      borderColor: "border-warning/20"
     }
   ];
 
+  const getTrendIcon = (direction: string) => {
+    switch (direction) {
+      case 'up':
+        return <TrendingUp className="h-3 w-3" />;
+      case 'down':
+        return <TrendingDown className="h-3 w-3" />;
+      default:
+        return <Minus className="h-3 w-3" />;
+    }
+  };
+
+  const getTrendColor = (direction: string) => {
+    switch (direction) {
+      case 'up':
+        return 'text-success';
+      case 'down':
+        return 'text-destructive';
+      default:
+        return 'text-muted-foreground';
+    }
+  };
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid-responsive">
       {metrics.map((metric, index) => (
-        <Card key={index}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+        <Card key={index} className="metric-card border-2 hover:border-primary/20 transition-all duration-200">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               {metric.title}
             </CardTitle>
-            <metric.icon className={`h-4 w-4 ${metric.color}`} />
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${metric.bgColor} ${metric.borderColor} border`}>
+              <metric.icon className={`h-5 w-5 ${metric.color} icon-line`} />
+            </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{metric.value}</div>
-            <p className="text-xs text-muted-foreground">
-              {metric.description}
-            </p>
+          <CardContent className="space-y-3">
+            <div className="text-metric font-bold text-foreground">{metric.value}</div>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                {metric.description}
+              </p>
+              <div className={`flex items-center space-x-1 text-xs font-medium ${getTrendColor(metric.trendDirection)}`}>
+                {getTrendIcon(metric.trendDirection)}
+                <span>{metric.trend}</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ))}
