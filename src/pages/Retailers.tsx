@@ -14,7 +14,7 @@ const Retailers = () => {
       domain: "amazon.com",
       status: "active",
       products: 456,
-      lastScrape: "2 hours ago",
+      lastScout: "2 hours ago",
       success: 98.2,
       avgResponse: "1.2s"
     },
@@ -24,7 +24,7 @@ const Retailers = () => {
       domain: "bestbuy.com",
       status: "active",
       products: 234,
-      lastScrape: "1 hour ago",
+      lastScout: "1 hour ago",
       success: 95.8,
       avgResponse: "0.8s"
     },
@@ -34,7 +34,7 @@ const Retailers = () => {
       domain: "walmart.com",
       status: "paused",
       products: 567,
-      lastScrape: "6 hours ago",
+      lastScout: "6 hours ago",
       success: 92.1,
       avgResponse: "2.1s"
     },
@@ -44,7 +44,7 @@ const Retailers = () => {
       domain: "target.com",
       status: "active",
       products: 123,
-      lastScrape: "30 minutes ago",
+      lastScout: "30 minutes ago",
       success: 97.5,
       avgResponse: "1.5s"
     }
@@ -57,7 +57,7 @@ const Retailers = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Retailer Management</h1>
           <p className="text-muted-foreground">
-            Configure and monitor scraping settings for each retailer
+            Configure and monitor scouting settings for each retailer
           </p>
         </div>
         <div className="flex items-center space-x-2">
@@ -126,7 +126,7 @@ const Retailers = () => {
                   <TableHead>Domain</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Products</TableHead>
-                  <TableHead>Last Scrape</TableHead>
+                  <TableHead>Last Scout</TableHead>
                   <TableHead>Success Rate</TableHead>
                   <TableHead>Avg Response</TableHead>
                   <TableHead>Actions</TableHead>
@@ -143,7 +143,7 @@ const Retailers = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>{retailer.products}</TableCell>
-                    <TableCell className="text-muted-foreground">{retailer.lastScrape}</TableCell>
+                    <TableCell className="text-muted-foreground">{retailer.lastScout}</TableCell>
                     <TableCell>
                       <span className={retailer.success > 95 ? "text-green-600" : "text-yellow-600"}>
                         {retailer.success}%
