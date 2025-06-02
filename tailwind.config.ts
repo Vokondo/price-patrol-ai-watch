@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -80,7 +79,7 @@ export default {
 				'2xl': 'calc(var(--radius) + 8px)'
 			},
 			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
+				sans: ['Poppins', 'system-ui', 'sans-serif'],
 			},
 			fontSize: {
 				'metric': ['2.5rem', { lineHeight: '1', fontWeight: '700' }],
