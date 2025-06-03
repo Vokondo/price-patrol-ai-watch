@@ -40,27 +40,31 @@ export function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <Sidebar className="border-r border-sidebar-border bg-sidebar">
+        <Sidebar className="border-r border-sidebar-border bg-sidebar" collapsible="icon">
           <SidebarContent>
-            <div className="p-6 border-b border-sidebar-border">
+            <div className="p-6 border-b border-sidebar-border group-data-[collapsible=icon]:p-3">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-sidebar-primary rounded-xl flex items-center justify-center">
                   <Shield className="h-6 w-6 text-sidebar-primary-foreground" />
                 </div>
-                <div>
+                <div className="group-data-[collapsible=icon]:hidden">
                   <h2 className="text-xl font-bold text-sidebar-foreground">STONZ</h2>
                   <p className="text-sm text-sidebar-foreground/70">Price Compliance</p>
                 </div>
               </div>
             </div>
             
-            <SidebarGroup className="px-4 py-6">
-              <SidebarGroupLabel className="text-sidebar-foreground/50 font-medium mb-4">Navigation</SidebarGroupLabel>
+            <SidebarGroup className="px-4 py-6 group-data-[collapsible=icon]:px-2">
+              <SidebarGroupLabel className="text-sidebar-foreground/50 font-medium mb-4 group-data-[collapsible=icon]:sr-only">Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu className="space-y-2">
                   {navigationItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                      <SidebarMenuButton 
+                        asChild 
+                        isActive={isActive(item.url)}
+                        tooltip={item.title}
+                      >
                         <NavLink 
                           to={item.url} 
                           className={({ isActive }) => 
@@ -68,11 +72,11 @@ export function Layout({ children }: LayoutProps) {
                               isActive 
                                 ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-lg' 
                                 : 'hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-accent-foreground'
-                            }`
+                            } group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-2`
                           }
                         >
                           <item.icon className="h-5 w-5 icon-line" />
-                          <span className="font-medium">{item.title}</span>
+                          <span className="font-medium group-data-[collapsible=icon]:hidden">{item.title}</span>
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
