@@ -1,14 +1,13 @@
-
 import React from 'react';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  AlertTriangle, 
-  Package, 
-  Store, 
-  FileText, 
-  Settings, 
+import {
+  LayoutDashboard,
+  AlertTriangle,
+  Package,
+  Store,
+  FileText,
+  Settings,
   User,
   Shield,
   Activity
@@ -40,7 +39,7 @@ export function Layout({ children }: LayoutProps) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
-        <Sidebar className="border-r border-sidebar-border bg-sidebar" collapsible="icon">
+        <Sidebar className="border-r border-sidebar-border bg-sidebar hidden md:flex" collapsible="icon">
           <SidebarContent>
             <div className="p-6 border-b border-sidebar-border group-data-[collapsible=icon]:p-3">
               <div className="flex items-center space-x-3">
@@ -87,20 +86,31 @@ export function Layout({ children }: LayoutProps) {
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex-1 flex flex-col">
-          <header className="h-18 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-8 shadow-sm">
-            <SidebarTrigger className="hover:bg-accent rounded-lg p-2" />
-            <div className="ml-auto flex items-center space-x-6">
-              <div className="flex items-center space-x-3 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Activity className="w-4 h-4 text-success animate-pulse" />
-                  <span className="text-muted-foreground font-medium">System Online</span>
+        <div className="flex-1 flex flex-col w-full">
+          <header className="h-16 md:h-18 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 flex items-center px-4 md:px-8 shadow-sm">
+            <SidebarTrigger className="hover:bg-accent rounded-lg p-2 md:hidden" />
+            <div className="flex md:hidden items-center space-x-3 ml-4">
+              <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                <Shield className="h-5 w-5 text-sidebar-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-foreground">STONZ</h2>
+              </div>
+            </div>
+            <div className="hidden md:block">
+              <SidebarTrigger className="hover:bg-accent rounded-lg p-2" />
+            </div>
+            <div className="ml-auto flex items-center space-x-4 md:space-x-6">
+              <div className="flex items-center space-x-2 md:space-x-3 text-sm">
+                <div className="flex items-center space-x-1 md:space-x-2">
+                  <Activity className="w-3 h-3 md:w-4 md:h-4 text-success animate-pulse" />
+                  <span className="text-muted-foreground font-medium text-xs md:text-sm">System Online</span>
                 </div>
               </div>
             </div>
           </header>
 
-          <main className="flex-1 p-8 bg-background">
+          <main className="flex-1 p-4 md:p-6 lg:p-8 bg-background">
             <div className="max-w-7xl mx-auto">
               {children}
             </div>

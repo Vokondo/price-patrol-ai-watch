@@ -81,21 +81,21 @@ export function MetricsCards() {
   };
 
   return (
-    <div className="grid-responsive">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric, index) => (
         <Card key={index} className="metric-card border-2 hover:border-primary/20 transition-all duration-200">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {metric.title}
             </CardTitle>
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${metric.bgColor} ${metric.borderColor} border`}>
-              <metric.icon className={`h-5 w-5 ${metric.color} icon-line`} />
+            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center ${metric.bgColor} ${metric.borderColor} border`}>
+              <metric.icon className={`h-4 w-4 md:h-5 md:w-5 ${metric.color} icon-line`} />
             </div>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="text-metric font-bold text-foreground">{metric.value}</div>
+            <div className="text-2xl md:text-metric font-bold text-foreground">{metric.value}</div>
             <div className="flex items-center justify-between">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs md:text-sm text-muted-foreground">
                 {metric.description}
               </p>
               <div className={`flex items-center space-x-1 text-xs font-medium ${getTrendColor(metric.trendDirection)}`}>
