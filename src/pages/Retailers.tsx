@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,9 +8,12 @@ import { useRetailers } from '@/hooks/useRetailers';
 import { AddRetailerForm } from '@/components/AddRetailerForm';
 import { DeleteRetailerDialog } from '@/components/DeleteRetailerDialog';
 import { format } from 'date-fns';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from "@/hooks/use-toast";
 
 const Retailers = () => {
   const { data: retailers, isLoading, error, refetch } = useRetailers();
+  const { toast } = useToast();
 
   const handleRetailerAdded = () => {
     refetch();
@@ -19,6 +21,54 @@ const Retailers = () => {
 
   const handleRetailerDeleted = () => {
     refetch();
+  };
+
+  const handleToggleStatus = async (retailerId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'paused' : 'active';
+    
+    try {
+      const { error } = await supabase
+        .from('retailers')
+        .update({ status: newStatus })
+        .eq('id', retailerId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status updated",
+        description: `Retailer has been ${newStatus === 'active' ? 'activated' : 'paused'}.`,
+      });
+
+      refetch();
+    } catch (error) {
+      console.error('Error updating retailer status:', error);
+      toast({
+        title: "Error updating status",
+        description: "There was a problem updating the retailer status.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGlobalSettings = () => {
+    toast({
+      title: "Global Settings",
+      description: "Global settings panel will be implemented soon.",
+    });
+  };
+
+  const handleRetailerSettings = (retailerName: string) => {
+    toast({
+      title: "Retailer Settings",
+      description: `Settings for ${retailerName} will be implemented soon.`,
+    });
+  };
+
+  const handleMoreActions = (retailerName: string) => {
+    toast({
+      title: "More Actions",
+      description: `Additional actions for ${retailerName} will be available soon.`,
+    });
   };
 
   if (isLoading) {
@@ -61,7 +111,7 @@ const Retailers = () => {
           </p>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-          <Button variant="outline" size="sm" className="w-full sm:w-auto">
+          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleGlobalSettings}>
             <Settings className="h-4 w-4 mr-2" />
             Global Settings
           </Button>
@@ -157,10 +207,20 @@ const Retailers = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-1 md:space-x-2">
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleToggleStatus(retailer.id, retailer.status)}
+                              title={retailer.status === "active" ? "Pause monitoring" : "Resume monitoring"}
+                            >
                               {retailer.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                             </Button>
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleRetailerSettings(retailer.name)}
+                              title="Retailer settings"
+                            >
                               <Settings className="h-4 w-4" />
                             </Button>
                             <DeleteRetailerDialog
@@ -168,7 +228,12 @@ const Retailers = () => {
                               retailerName={retailer.name}
                               onRetailerDeleted={handleRetailerDeleted}
                             />
-                            <Button variant="ghost" size="sm">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleMoreActions(retailer.name)}
+                              title="More actions"
+                            >
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </div>

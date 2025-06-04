@@ -5,11 +5,13 @@ import { AlertTriangle, Package, Store, TrendingUp, TrendingDown, Minus } from "
 import { useViolationStats } from '@/hooks/useViolations';
 import { useProductStats } from '@/hooks/useProducts';
 import { useRetailers } from '@/hooks/useRetailers';
+import { useNavigate } from 'react-router-dom';
 
 export function MetricsCards() {
   const { data: violationStats, isLoading: violationsLoading } = useViolationStats();
   const { data: productStats, isLoading: productsLoading } = useProductStats();
   const { data: retailers, isLoading: retailersLoading } = useRetailers();
+  const navigate = useNavigate();
 
   const metrics = [
     {
@@ -21,7 +23,8 @@ export function MetricsCards() {
       trendDirection: "up",
       color: "text-destructive",
       bgColor: "bg-destructive/10",
-      borderColor: "border-destructive/20"
+      borderColor: "border-destructive/20",
+      onClick: () => navigate('/violations')
     },
     {
       title: "Products Monitored",
@@ -32,7 +35,8 @@ export function MetricsCards() {
       trendDirection: "up",
       color: "text-primary",
       bgColor: "bg-primary/10",
-      borderColor: "border-primary/20"
+      borderColor: "border-primary/20",
+      onClick: () => navigate('/products')
     },
     {
       title: "Retail Partners",
@@ -43,7 +47,8 @@ export function MetricsCards() {
       trendDirection: "stable",
       color: "text-success",
       bgColor: "bg-success/10",
-      borderColor: "border-success/20"
+      borderColor: "border-success/20",
+      onClick: () => navigate('/retailers')
     },
     {
       title: "Resolved Today",
@@ -54,7 +59,8 @@ export function MetricsCards() {
       trendDirection: "down",
       color: "text-warning",
       bgColor: "bg-warning/10",
-      borderColor: "border-warning/20"
+      borderColor: "border-warning/20",
+      onClick: () => navigate('/violations')
     }
   ];
 
@@ -83,8 +89,12 @@ export function MetricsCards() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric, index) => (
-        <Card key={index} className="metric-card border-2 hover:border-primary/20 transition-all duration-200">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+        <Card 
+          key={index} 
+          className="metric-card border-2 hover:border-primary/20 transition-all duration-200 cursor-pointer hover:shadow-md"
+          onClick={metric.onClick}
+        >
+          <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {metric.title}
             </CardTitle>
