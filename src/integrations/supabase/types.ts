@@ -9,6 +9,66 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          alert_email: string | null
+          created_at: string | null
+          database_url: string | null
+          email_notifications: boolean | null
+          enable_proxy: boolean | null
+          id: string
+          max_retries: number | null
+          request_delay: number | null
+          scrape_frequency:
+            | Database["public"]["Enums"]["monitoring_frequency"]
+            | null
+          slack_notifications: boolean | null
+          slack_webhook: string | null
+          updated_at: string | null
+          user_agent: string | null
+          user_id: string | null
+          violation_threshold: number | null
+        }
+        Insert: {
+          alert_email?: string | null
+          created_at?: string | null
+          database_url?: string | null
+          email_notifications?: boolean | null
+          enable_proxy?: boolean | null
+          id?: string
+          max_retries?: number | null
+          request_delay?: number | null
+          scrape_frequency?:
+            | Database["public"]["Enums"]["monitoring_frequency"]
+            | null
+          slack_notifications?: boolean | null
+          slack_webhook?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          violation_threshold?: number | null
+        }
+        Update: {
+          alert_email?: string | null
+          created_at?: string | null
+          database_url?: string | null
+          email_notifications?: boolean | null
+          enable_proxy?: boolean | null
+          id?: string
+          max_retries?: number | null
+          request_delay?: number | null
+          scrape_frequency?:
+            | Database["public"]["Enums"]["monitoring_frequency"]
+            | null
+          slack_notifications?: boolean | null
+          slack_webhook?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          violation_threshold?: number | null
+        }
+        Relationships: []
+      }
       price_history: {
         Row: {
           currency: string | null
@@ -177,6 +237,33 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           website_url?: string | null
+        }
+        Relationships: []
+      }
+      user_secrets: {
+        Row: {
+          created_at: string | null
+          id: string
+          secret_key: string
+          secret_value: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          secret_key: string
+          secret_value: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          secret_key?: string
+          secret_value?: string
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

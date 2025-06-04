@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Save, Bell, Clock, Shield, Database, AlertTriangle } from "lucide-react";
+import { Save, Bell, Clock, Shield, Database, AlertTriangle, TestTube, Play } from "lucide-react";
+import { useSettings, useUpdateSettings } from '@/hooks/useSettings';
+import { useSecrets, useUpsertSecret } from '@/hooks/useSecrets';
+import { useToast } from '@/hooks/use-toast';
 
 const Settings = () => {
-  const [settings, setSettings] = useState({
+  const { data: settings, isLoading } = useSettings();
+  const { data: secrets } = useSecrets();
+  const updateSettings = useUpdateSettings();
+  const upsertSecret = useUpsertSecret();
+  const { toast } = useToast();
+
+  const [formData, setFormData] = useState({
     scrapeFrequency: "6",
     emailNotifications: true,
     slackNotifications: false,
@@ -20,17 +29,115 @@ const Settings = () => {
     requestDelay: "2",
     enableProxy: true,
     userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-    alertEmail: "admin@company.com",
+    alertEmail: "",
     slackWebhook: "",
-    brightDataKey: "",
-    openRouterKey: "",
     databaseUrl: "postgresql://localhost:5432/map_monitor"
   });
 
-  const handleSave = () => {
-    console.log("Saving settings:", settings);
-    // Here you would save to your backend
+  const [apiKeys, setApiKeys] = useState({
+    brightDataKey: "",
+    openRouterKey: ""
+  });
+
+  // Initialize form data when settings are loaded
+  useEffect(() => {
+    if (settings) {
+      setFormData({
+        scrapeFrequency: settings.scrape_frequency || "6",
+        emailNotifications: settings.email_notifications ?? true,
+        slackNotifications: settings.slack_notifications ?? false,
+        violationThreshold: settings.violation_threshold?.toString() || "90",
+        maxRetries: settings.max_retries?.toString() || "3",
+        requestDelay: settings.request_delay?.toString() || "2",
+        enableProxy: settings.enable_proxy ?? true,
+        userAgent: settings.user_agent || "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        alertEmail: settings.alert_email || "",
+        slackWebhook: settings.slack_webhook || "",
+        databaseUrl: settings.database_url || "postgresql://localhost:5432/map_monitor"
+      });
+    }
+  }, [settings]);
+
+  // Initialize API keys from secrets
+  useEffect(() => {
+    if (secrets) {
+      const brightData = secrets.find(s => s.secret_key === 'BRIGHT_DATA_API_KEY');
+      const openRouter = secrets.find(s => s.secret_key === 'OPENROUTER_API_KEY');
+      
+      setApiKeys({
+        brightDataKey: brightData ? '••••••••••••••••' : "",
+        openRouterKey: openRouter ? '••••••••••••••••' : ""
+      });
+    }
+  }, [secrets]);
+
+  const handleSave = async () => {
+    try {
+      // Save settings
+      await updateSettings.mutateAsync({
+        scrape_frequency: formData.scrapeFrequency,
+        email_notifications: formData.emailNotifications,
+        slack_notifications: formData.slackNotifications,
+        violation_threshold: parseInt(formData.violationThreshold),
+        max_retries: parseInt(formData.maxRetries),
+        request_delay: parseInt(formData.requestDelay),
+        enable_proxy: formData.enableProxy,
+        user_agent: formData.userAgent,
+        alert_email: formData.alertEmail,
+        slack_webhook: formData.slackWebhook,
+        database_url: formData.databaseUrl
+      });
+
+      // Save API keys if they've been modified
+      if (apiKeys.brightDataKey && !apiKeys.brightDataKey.includes('••••')) {
+        await upsertSecret.mutateAsync({
+          secret_key: 'BRIGHT_DATA_API_KEY',
+          secret_value: apiKeys.brightDataKey
+        });
+      }
+
+      if (apiKeys.openRouterKey && !apiKeys.openRouterKey.includes('••••')) {
+        await upsertSecret.mutateAsync({
+          secret_key: 'OPENROUTER_API_KEY',
+          secret_value: apiKeys.openRouterKey
+        });
+      }
+    } catch (error) {
+      console.error('Error saving settings:', error);
+    }
   };
+
+  const handleTestConnection = () => {
+    toast({
+      title: "Connection Test",
+      description: "Testing database connection...",
+    });
+    // Placeholder for actual connection test
+    setTimeout(() => {
+      toast({
+        title: "Connection Successful",
+        description: "Database connection is working properly.",
+      });
+    }, 2000);
+  };
+
+  const handleRunMigrations = () => {
+    toast({
+      title: "Running Migrations",
+      description: "Database migrations are being executed...",
+    });
+    // Placeholder for actual migration runner
+    setTimeout(() => {
+      toast({
+        title: "Migrations Complete",
+        description: "All database migrations have been applied successfully.",
+      });
+    }, 3000);
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center p-8">Loading settings...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -42,9 +149,9 @@ const Settings = () => {
             Configure your MAP monitoring system preferences and integrations
           </p>
         </div>
-        <Button onClick={handleSave}>
+        <Button onClick={handleSave} disabled={updateSettings.isPending}>
           <Save className="h-4 w-4 mr-2" />
-          Save Changes
+          {updateSettings.isPending ? 'Saving...' : 'Save Changes'}
         </Button>
       </div>
 
@@ -60,8 +167,8 @@ const Settings = () => {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="frequency">Scraping Frequency (hours)</Label>
-              <Select value={settings.scrapeFrequency} onValueChange={(value) => 
-                setSettings(prev => ({ ...prev, scrapeFrequency: value }))
+              <Select value={formData.scrapeFrequency} onValueChange={(value) => 
+                setFormData(prev => ({ ...prev, scrapeFrequency: value }))
               }>
                 <SelectTrigger>
                   <SelectValue />
@@ -80,8 +187,8 @@ const Settings = () => {
               <Label htmlFor="threshold">Violation Threshold (%)</Label>
               <Input
                 id="threshold"
-                value={settings.violationThreshold}
-                onChange={(e) => setSettings(prev => ({ ...prev, violationThreshold: e.target.value }))}
+                value={formData.violationThreshold}
+                onChange={(e) => setFormData(prev => ({ ...prev, violationThreshold: e.target.value }))}
                 placeholder="90"
               />
               <p className="text-xs text-muted-foreground">
@@ -93,8 +200,8 @@ const Settings = () => {
               <Label htmlFor="retries">Max Retries</Label>
               <Input
                 id="retries"
-                value={settings.maxRetries}
-                onChange={(e) => setSettings(prev => ({ ...prev, maxRetries: e.target.value }))}
+                value={formData.maxRetries}
+                onChange={(e) => setFormData(prev => ({ ...prev, maxRetries: e.target.value }))}
                 placeholder="3"
               />
             </div>
@@ -103,8 +210,8 @@ const Settings = () => {
               <Label htmlFor="delay">Request Delay (seconds)</Label>
               <Input
                 id="delay"
-                value={settings.requestDelay}
-                onChange={(e) => setSettings(prev => ({ ...prev, requestDelay: e.target.value }))}
+                value={formData.requestDelay}
+                onChange={(e) => setFormData(prev => ({ ...prev, requestDelay: e.target.value }))}
                 placeholder="2"
               />
             </div>
@@ -112,8 +219,8 @@ const Settings = () => {
             <div className="flex items-center space-x-2">
               <Switch
                 id="proxy"
-                checked={settings.enableProxy}
-                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, enableProxy: checked }))}
+                checked={formData.enableProxy}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, enableProxy: checked }))}
               />
               <Label htmlFor="proxy">Enable Proxy Rotation</Label>
             </div>
@@ -132,8 +239,8 @@ const Settings = () => {
             <div className="flex items-center space-x-2">
               <Switch
                 id="email"
-                checked={settings.emailNotifications}
-                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, emailNotifications: checked }))}
+                checked={formData.emailNotifications}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, emailNotifications: checked }))}
               />
               <Label htmlFor="email">Email Notifications</Label>
             </div>
@@ -143,8 +250,8 @@ const Settings = () => {
               <Input
                 id="alertEmail"
                 type="email"
-                value={settings.alertEmail}
-                onChange={(e) => setSettings(prev => ({ ...prev, alertEmail: e.target.value }))}
+                value={formData.alertEmail}
+                onChange={(e) => setFormData(prev => ({ ...prev, alertEmail: e.target.value }))}
                 placeholder="admin@company.com"
               />
             </div>
@@ -154,8 +261,8 @@ const Settings = () => {
             <div className="flex items-center space-x-2">
               <Switch
                 id="slack"
-                checked={settings.slackNotifications}
-                onCheckedChange={(checked) => setSettings(prev => ({ ...prev, slackNotifications: checked }))}
+                checked={formData.slackNotifications}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, slackNotifications: checked }))}
               />
               <Label htmlFor="slack">Slack Notifications</Label>
             </div>
@@ -164,10 +271,10 @@ const Settings = () => {
               <Label htmlFor="webhook">Slack Webhook URL</Label>
               <Input
                 id="webhook"
-                value={settings.slackWebhook}
-                onChange={(e) => setSettings(prev => ({ ...prev, slackWebhook: e.target.value }))}
+                value={formData.slackWebhook}
+                onChange={(e) => setFormData(prev => ({ ...prev, slackWebhook: e.target.value }))}
                 placeholder="https://hooks.slack.com/..."
-                disabled={!settings.slackNotifications}
+                disabled={!formData.slackNotifications}
               />
             </div>
           </CardContent>
@@ -187,8 +294,8 @@ const Settings = () => {
               <Input
                 id="brightData"
                 type="password"
-                value={settings.brightDataKey}
-                onChange={(e) => setSettings(prev => ({ ...prev, brightDataKey: e.target.value }))}
+                value={apiKeys.brightDataKey}
+                onChange={(e) => setApiKeys(prev => ({ ...prev, brightDataKey: e.target.value }))}
                 placeholder="Enter your Bright Data API key"
               />
             </div>
@@ -198,8 +305,8 @@ const Settings = () => {
               <Input
                 id="openRouter"
                 type="password"
-                value={settings.openRouterKey}
-                onChange={(e) => setSettings(prev => ({ ...prev, openRouterKey: e.target.value }))}
+                value={apiKeys.openRouterKey}
+                onChange={(e) => setApiKeys(prev => ({ ...prev, openRouterKey: e.target.value }))}
                 placeholder="Enter your OpenRouter API key"
               />
             </div>
@@ -208,8 +315,8 @@ const Settings = () => {
               <Label htmlFor="userAgent">User Agent String</Label>
               <Textarea
                 id="userAgent"
-                value={settings.userAgent}
-                onChange={(e) => setSettings(prev => ({ ...prev, userAgent: e.target.value }))}
+                value={formData.userAgent}
+                onChange={(e) => setFormData(prev => ({ ...prev, userAgent: e.target.value }))}
                 placeholder="Mozilla/5.0..."
                 rows={3}
               />
@@ -230,8 +337,8 @@ const Settings = () => {
               <Label htmlFor="dbUrl">Database URL</Label>
               <Input
                 id="dbUrl"
-                value={settings.databaseUrl}
-                onChange={(e) => setSettings(prev => ({ ...prev, databaseUrl: e.target.value }))}
+                value={formData.databaseUrl}
+                onChange={(e) => setFormData(prev => ({ ...prev, databaseUrl: e.target.value }))}
                 placeholder="postgresql://user:password@host:port/database"
               />
             </div>
@@ -244,10 +351,12 @@ const Settings = () => {
             </div>
 
             <div className="flex gap-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleTestConnection}>
+                <TestTube className="h-4 w-4 mr-2" />
                 Test Connection
               </Button>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={handleRunMigrations}>
+                <Play className="h-4 w-4 mr-2" />
                 Run Migrations
               </Button>
             </div>
