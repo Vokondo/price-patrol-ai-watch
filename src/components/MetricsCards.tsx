@@ -91,7 +91,7 @@ export function MetricsCards() {
       {metrics.map((metric, index) => (
         <Card 
           key={index} 
-          className="metric-card border-2 hover:border-primary/20 transition-all duration-200 cursor-pointer hover:shadow-md"
+          className="metric-card border-2 hover:border-success/30 hover:bg-success/5 transition-all duration-200 cursor-pointer hover:shadow-md"
           onClick={metric.onClick}
         >
           <CardHeader className="pb-2">
