@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
@@ -10,8 +11,12 @@ import {
   Settings,
   User,
   Shield,
-  Activity
+  Activity,
+  LogOut
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const navigationItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
@@ -30,10 +35,28 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const currentPath = location.pathname;
+  const { signOut, user } = useAuth();
+  const { toast } = useToast();
 
   const isActive = (path: string) => {
     if (path === "/") return currentPath === "/";
     return currentPath.startsWith(path);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed out successfully",
+        description: "You have been logged out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error signing out",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -53,7 +76,7 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </div>
             
-            <SidebarGroup className="px-4 py-6 group-data-[collapsible=icon]:px-2">
+            <SidebarGroup className="px-4 py-6 group-data-[collapsible=icon]:px-2 flex-1">
               <SidebarGroupLabel className="text-sidebar-foreground/50 font-medium mb-4 group-data-[collapsible=icon]:sr-only">Navigation</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu className="space-y-2">
@@ -83,6 +106,25 @@ export function Layout({ children }: LayoutProps) {
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
+
+            {/* User info and logout button */}
+            <div className="p-4 border-t border-sidebar-border group-data-[collapsible=icon]:p-2">
+              <div className="group-data-[collapsible=icon]:hidden mb-3">
+                <p className="text-sm text-sidebar-foreground/70">Signed in as:</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                  {user?.email}
+                </p>
+              </div>
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                size="sm"
+                className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:justify-center"
+              >
+                <LogOut className="h-4 w-4 group-data-[collapsible=icon]:mr-0 mr-2" />
+                <span className="group-data-[collapsible=icon]:hidden">Sign Out</span>
+              </Button>
+            </div>
           </SidebarContent>
         </Sidebar>
 
@@ -106,6 +148,16 @@ export function Layout({ children }: LayoutProps) {
                   <Activity className="w-3 h-3 md:w-4 md:h-4 text-success animate-pulse" />
                   <span className="text-muted-foreground font-medium text-xs md:text-sm">System Online</span>
                 </div>
+              </div>
+              <div className="md:hidden">
+                <Button
+                  onClick={handleSignOut}
+                  variant="ghost"
+                  size="sm"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           </header>
