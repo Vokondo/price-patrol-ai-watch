@@ -3,10 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Settings, Play, Pause, MoreHorizontal } from "lucide-react";
+import { Play, Pause } from "lucide-react";
 import { useRetailers } from '@/hooks/useRetailers';
 import { AddRetailerForm } from '@/components/AddRetailerForm';
 import { DeleteRetailerDialog } from '@/components/DeleteRetailerDialog';
+import { GlobalSettingsDialog } from '@/components/GlobalSettingsDialog';
+import { RetailerSettingsDialog } from '@/components/RetailerSettingsDialog';
+import { RetailerActionsDropdown } from '@/components/RetailerActionsDropdown';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -50,27 +53,6 @@ const Retailers = () => {
     }
   };
 
-  const handleGlobalSettings = () => {
-    toast({
-      title: "Global Settings",
-      description: "Global settings panel will be implemented soon.",
-    });
-  };
-
-  const handleRetailerSettings = (retailerName: string) => {
-    toast({
-      title: "Retailer Settings",
-      description: `Settings for ${retailerName} will be implemented soon.`,
-    });
-  };
-
-  const handleMoreActions = (retailerName: string) => {
-    toast({
-      title: "More Actions",
-      description: `Additional actions for ${retailerName} will be available soon.`,
-    });
-  };
-
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -111,10 +93,7 @@ const Retailers = () => {
           </p>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleGlobalSettings}>
-            <Settings className="h-4 w-4 mr-2" />
-            Global Settings
-          </Button>
+          <GlobalSettingsDialog />
           <AddRetailerForm onRetailerAdded={handleRetailerAdded} />
         </div>
       </div>
@@ -215,27 +194,19 @@ const Retailers = () => {
                             >
                               {retailer.status === "active" ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleRetailerSettings(retailer.name)}
-                              title="Retailer settings"
-                            >
-                              <Settings className="h-4 w-4" />
-                            </Button>
+                            <RetailerSettingsDialog
+                              retailerId={retailer.id}
+                              retailerName={retailer.name}
+                            />
                             <DeleteRetailerDialog
                               retailerId={retailer.id}
                               retailerName={retailer.name}
                               onRetailerDeleted={handleRetailerDeleted}
                             />
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleMoreActions(retailer.name)}
-                              title="More actions"
-                            >
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
+                            <RetailerActionsDropdown
+                              retailerId={retailer.id}
+                              retailerName={retailer.name}
+                            />
                           </div>
                         </TableCell>
                       </TableRow>

@@ -4,18 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Search, Edit } from "lucide-react";
+import { Search } from "lucide-react";
 import { useProducts, useProductStats } from '@/hooks/useProducts';
 import { AddProductForm } from '@/components/AddProductForm';
 import { DeleteProductDialog } from '@/components/DeleteProductDialog';
+import { CSVImportDialog } from '@/components/CSVImportDialog';
+import { EditProductDialog } from '@/components/EditProductDialog';
 import { format } from 'date-fns';
-import { useToast } from "@/hooks/use-toast";
 
 const Products = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { data: products, isLoading, error, refetch } = useProducts();
   const { data: stats } = useProductStats();
-  const { toast } = useToast();
 
   // Filter products based on search term
   const filteredProducts = products?.filter(product => 
@@ -32,18 +32,12 @@ const Products = () => {
     refetch();
   };
 
-  const handleImportCSV = () => {
-    toast({
-      title: "Import CSV",
-      description: "CSV import functionality will be implemented soon.",
-    });
+  const handleProductUpdated = () => {
+    refetch();
   };
 
-  const handleEditProduct = (productName: string) => {
-    toast({
-      title: "Edit Product",
-      description: `Edit functionality for ${productName} will be implemented soon.`,
-    });
+  const handleImportComplete = () => {
+    refetch();
   };
 
   if (isLoading) {
@@ -83,10 +77,7 @@ const Products = () => {
           </p>
         </div>
         <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-2">
-          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={handleImportCSV}>
-            <Upload className="h-4 w-4 mr-2" />
-            Import CSV
-          </Button>
+          <CSVImportDialog onImportComplete={handleImportComplete} />
           <AddProductForm onProductAdded={handleProductAdded} />
         </div>
       </div>
@@ -198,14 +189,10 @@ const Products = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center space-x-1 md:space-x-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleEditProduct(product.name)}
-                              title="Edit product"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
+                            <EditProductDialog
+                              product={product}
+                              onProductUpdated={handleProductUpdated}
+                            />
                             <DeleteProductDialog
                               productId={product.id}
                               productName={product.name}
