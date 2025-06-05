@@ -30,11 +30,11 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
 
-    --success: 120 100% 35%;
+    --success: 120 100% 25%;
     --success-foreground: 0 0% 98%;
 
-    --warning: 45 100% 51%;
-    --warning-foreground: 158 64% 12%;
+    --warning: 45 100% 45%;
+    --warning-foreground: 0 0% 98%;
 
     --border: 120 13% 91%;
     --input: 120 13% 91%;
@@ -134,15 +134,15 @@
   }
 
   .status-badge-success {
-    @apply bg-success/10 text-success border-success/20;
+    @apply bg-success/20 text-success border-success/30 font-semibold;
   }
 
   .status-badge-warning {
-    @apply bg-warning/10 text-warning border-warning/20;
+    @apply bg-warning/20 text-warning border-warning/30 font-semibold;
   }
 
   .status-badge-error {
-    @apply bg-destructive/10 text-destructive border-destructive/20;
+    @apply bg-destructive/20 text-destructive border-destructive/30 font-semibold;
   }
 
   .icon-line {
