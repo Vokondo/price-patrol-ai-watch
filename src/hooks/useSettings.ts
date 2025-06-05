@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 export type AppSettings = {
   id?: string;
   user_id?: string;
-  scrape_frequency: string;
+  scrape_frequency: "hourly" | "daily" | "weekly";
   email_notifications: boolean;
   slack_notifications: boolean;
   violation_threshold: number;
@@ -39,7 +39,7 @@ export const useSettings = () => {
       // Return default settings if no settings exist yet
       if (!data) {
         return {
-          scrape_frequency: '6',
+          scrape_frequency: 'daily' as const,
           email_notifications: true,
           slack_notifications: false,
           violation_threshold: 90,
@@ -74,8 +74,10 @@ export const useUpdateSettings = () => {
         .eq('user_id', user.id)
         .maybeSingle();
 
+      // Remove user_id from settings object and add it separately
+      const { user_id, ...settingsData } = settings;
       const settingsWithUserId = {
-        ...settings,
+        ...settingsData,
         user_id: user.id
       };
 
@@ -83,7 +85,7 @@ export const useUpdateSettings = () => {
         // Update existing settings
         const { data, error } = await supabase
           .from('app_settings')
-          .update(settingsWithUserId)
+          .update(settingsData)
           .eq('user_id', user.id)
           .select()
           .single();

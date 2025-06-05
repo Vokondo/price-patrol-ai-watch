@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,7 +20,7 @@ const Settings = () => {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
-    scrapeFrequency: "6",
+    scrapeFrequency: "daily" as "hourly" | "daily" | "weekly",
     emailNotifications: true,
     slackNotifications: false,
     violationThreshold: "90",
@@ -43,7 +42,7 @@ const Settings = () => {
   useEffect(() => {
     if (settings) {
       setFormData({
-        scrapeFrequency: settings.scrape_frequency || "6",
+        scrapeFrequency: settings.scrape_frequency || "daily",
         emailNotifications: settings.email_notifications ?? true,
         slackNotifications: settings.slack_notifications ?? false,
         violationThreshold: settings.violation_threshold?.toString() || "90",
@@ -166,19 +165,17 @@ const Settings = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="frequency">Scraping Frequency (hours)</Label>
-              <Select value={formData.scrapeFrequency} onValueChange={(value) => 
+              <Label htmlFor="frequency">Scraping Frequency</Label>
+              <Select value={formData.scrapeFrequency} onValueChange={(value: "hourly" | "daily" | "weekly") => 
                 setFormData(prev => ({ ...prev, scrapeFrequency: value }))
               }>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">Every Hour</SelectItem>
-                  <SelectItem value="3">Every 3 Hours</SelectItem>
-                  <SelectItem value="6">Every 6 Hours</SelectItem>
-                  <SelectItem value="12">Every 12 Hours</SelectItem>
-                  <SelectItem value="24">Daily</SelectItem>
+                  <SelectItem value="hourly">Hourly</SelectItem>
+                  <SelectItem value="daily">Daily</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
                 </SelectContent>
               </Select>
             </div>
